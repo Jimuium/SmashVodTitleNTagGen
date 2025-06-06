@@ -1,0 +1,33 @@
+{
+  "players": {
+    "hertsu": [
+      "Hertsu",
+      {
+        "Sheik": 26,
+        "Fox": 6
+      }
+    ],
+    "dasuki": [
+      "Dasuki",
+      {
+        "Piranha Plant": 24,
+        "R.O.B": 13,
+        "Bowser": 7
+      }
+    ]
+  },
+  "events": [
+    {
+      "name": "PVL Weekly",
+      "number": 19
+    },
+    {
+      "name": "PVL Weekly",
+      "number": 18
+    },
+    {
+      "name": "rtr",
+      "number": 4
+    }
+  ]
+}
