@@ -50,6 +50,8 @@ def main():
         if prompt_for_event_links(event_obj, event_title):
             print("Event links updated.")
 
+    # If no bracket link, add a placeholder line
+    
     description = generate_description(
         p1_display, p2_display, p1_chars, p2_chars, evt_name, evt_num, event_obj, data
     )

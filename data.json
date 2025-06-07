@@ -126,61 +126,71 @@
     "hertsu": [
       "Hertsu",
       {
-        "Sheik": 10
+        "Sheik": 21
       }
     ],
     "dasuki": [
       "Dasuki",
       {
-        "Piranha Plant": 1
+        "Piranha Plant": 7
       }
     ],
     "jimuu": [
       "Jimuu",
       {
-        "Yoshi": 14
+        "Yoshi": 8
       }
     ],
     "hernos": [
       "Hernos",
       {
-        "ROB": 4
+        "ROB": 8
       }
     ],
     "turbokaivuri": [
       "Turbokaivuri",
       {
-        "Jigglypuff": 1
+        "Jigglypuff": 3,
+        "Pac-Man": 1
       }
     ],
     "venjous": [
       "Venjous",
       {
-        "Byleth": 1
+        "Byleth": 2
       }
     ],
     "menta": [
       "Menta",
       {
-        "Kazuya": 10
+        "Kazuya": 3,
+        "Mega Man": 1
       }
     ],
     "elgy": [
       "Elgy",
       {
-        "Little Mac": 2
+        "Little Mac": 4
       }
     ],
-    "lhimenen": [
-      "lhimenen",
+    "lhminen": [
+      "lhminen",
       {
-        "Terry": 1
+        "Terry": 2,
+        "Steve": 3
       }
     ],
     "dani": [
       "Dani",
       {
-        "Cloud": 2
+        "Cloud": 4
+      }
+    ],
+    "lolappa": [
+      "Lolappa",
+      {
+        "Pit": 1,
+        "Dark Pit": 1
       }
     ]
   },
@@ -188,8 +198,8 @@
     {
       "name": "PVL Weekly",
       "number": 18,
-      "playlist": "blaablaa",
-      "bracket": "bleeblee"
+      "playlist": "https://www.youtube.com/playlist?list=PLqSx0fqnU5Us4JE9A4fv0TnnUZ6UNyVYk",
+      "bracket": ""
     }
   ]
 }

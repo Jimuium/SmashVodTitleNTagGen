@@ -30,7 +30,7 @@ def generate_description(p1, p2, chars1, chars2, event_name, event_number, event
     if round_str:
         r = round_str.lower()
         if (
-            r == "losers semifinals"
+            r == "losers semi-finals"
             or r == "losers finals"
             or r == "winners finals"
             or r == "winners grand finals"
@@ -58,8 +58,7 @@ def generate_description(p1, p2, chars1, chars2, event_name, event_number, event
     # Bracket link
     if event and event.get("bracket"):
         desc.append(f"Full bracket and results: {event['bracket']}")
-    else:
-        desc.append(f"Full bracket and results: [insert link if available]")
+
     
     desc.append("\nSubscribe for more competitive Super Smash Bros. Ultimate content, including full sets, tournament highlights, and weekly uploads.\n")
     

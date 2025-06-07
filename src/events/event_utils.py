@@ -52,12 +52,12 @@ def generate_title_with_event(p1, p2, chars1, chars2, data):
     if round_type in ["Winners", "Losers"]:
         detail_opts = (
             [f"r{i}" for i in range(1, 100)] +
-            ["qf", "sf", "f", "gf", "Quarterfinals", "Semifinals", "Finals", "Grand Finals"]
+            ["qf", "sf", "f", "gf", "Quarterfinals", "Semi-Finals", "Finals", "Grand Finals"]
         )
         print("\nAvailable rounds:")
         print("  Round N (rN)")
         print("  Quarterfinals (qf)")
-        print("  Semifinals (sf)")
+        print("  Semi-Finals (sf)")
         print("  Finals (f)")
         print("  Grand Finals (gf)")
 
@@ -97,11 +97,11 @@ def parse_round_input(raw, round_type):
     val = raw.strip().lower()
     mapping = {
         "qf": "Quarterfinals",
-        "sf": "Semifinals",
+        "sf": "Semi-Finals",
         "f": "Finals",
         "gf": "Grand Finals",
         "quarterfinals": "Quarterfinals",
-        "semifinals": "Semifinals",
+        "semi-finals": "Semi-Finals",
         "finals": "Finals",
         "grand finals": "Grand Finals"
     }
