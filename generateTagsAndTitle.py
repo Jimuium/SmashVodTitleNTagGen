@@ -6,6 +6,47 @@ import re
 
 DATA_FILE = "data.json"
 
+CHARACTER_LIST = [
+    "Mario", "Donkey Kong", "Link", "Samus", "Dark Samus", "Yoshi", "Kirby", "Fox", "Pikachu",
+    "Luigi", "Ness", "Captain Falcon", "Jigglypuff", "Peach", "Daisy", "Bowser", "Ice Climbers",
+    "Sheik", "Zelda", "Dr. Mario", "Pichu", "Falco", "Marth", "Lucina", "Young Link", "Ganondorf",
+    "Mewtwo", "Roy", "Chrom", "Mr. Game & Watch", "Meta Knight", "Pit", "Dark Pit", "Zero Suit Samus",
+    "Wario", "Snake", "Ike", "Pokémon Trainer", "Diddy Kong", "Lucas", "Sonic", "King Dedede",
+    "Olimar", "Lucario", "ROB", "Toon Link", "Wolf", "Villager", "Mega Man", "Wii Fit Trainer",
+    "Rosalina & Luma", "Little Mac", "Greninja", "Mii Brawler", "Mii Swordfighter", "Mii Gunner",
+    "Palutena", "Pac-Man", "Robin", "Shulk", "Bowser Jr.", "Duck Hunt", "Ryu", "Ken", "Cloud",
+    "Corrin", "Bayonetta", "Inkling", "Ridley", "Simon", "Richter", "King K. Rool", "Isabelle",
+    "Incineroar", "Piranha Plant", "Joker", "Hero", "Banjo & Kazooie", "Terry", "Byleth", "Min Min",
+    "Steve", "Sephiroth", "Pyra", "Mythra", "Kazuya", "Sora"
+]
+
+# Add a mapping for character aliases
+CHARACTER_ALIASES = {
+    "ROB": ["R.O.B.", "Robotic Operating Buddy"],
+    "Bowser Jr.": ["Bowser Junior"],
+    "Pokémon Trainer": ["Pokemon Trainer"],
+    "Mr. Game & Watch": ["Game & Watch", "Mr Game and Watch"],
+    "Duck Hunt": ["Duck Hunt Duo"],
+    "Banjo & Kazooie": ["Banjo and Kazooie"],
+    "Rosalina & Luma": ["Rosalina and Luma"],
+    "Ice Climbers": ["Ice Climber"],
+    "King K. Rool": ["King K Rool"],
+    "Wii Fit Trainer": ["Wii Fit"],
+    # Add more aliases as needed
+}
+
+
+def get_all_aliases(char_name):
+    """Returns a list of all aliases for a character, including the main name."""
+    aliases = [char_name]
+    for main, others in CHARACTER_ALIASES.items():
+        if char_name == main:
+            aliases.extend(others)
+        elif char_name in others:
+            aliases.append(main)
+            aliases.extend([o for o in others if o != char_name])
+    return list(dict.fromkeys(aliases))  # Remove duplicates, preserve order
+
 
 def load_data():
     """
@@ -102,9 +143,11 @@ def get_characters(player_input, data):
 
     chosen = []
     used_chars = set()
+    # If no previous character data, use CHARACTER_LIST for autocomplete
+    autocomplete_options = top_characters if top_characters else CHARACTER_LIST
     for i in range(num):
         prompt = f"Character {i+1} for {display_name} (leave blank to auto-select): "
-        char_input = input_with_autocomplete(prompt, top_characters)
+        char_input = input_with_autocomplete(prompt, autocomplete_options)
 
         if char_input:
             chosen_char = char_input
@@ -131,6 +174,7 @@ def construct_tags(p1, p2, chars1, chars2, event_name, event_number):
         • "c1 vs c2"
         • "p1 c1"
         • "p2 c2"
+      For each alias of c1/c2, also include those tags.
     - Also: "p1 vs p2" and "p2 vs p1".
     - Removes duplicates (case-insensitive), then keeps adding
       until reaching 400 characters total.
@@ -143,12 +187,22 @@ def construct_tags(p1, p2, chars1, chars2, event_name, event_number):
     ]
 
     matchups = []
-    for c1, c2 in itertools.product(chars1, chars2):
-        matchups += [
-            f"{c1} vs {c2}",
-            f"{p1} {c1}",
-            f"{p2} {c2}",
-        ]
+    # For each character, get all aliases (including main name)
+    chars1_aliases = [get_all_aliases(c1) for c1 in chars1]
+    chars2_aliases = [get_all_aliases(c2) for c2 in chars2]
+
+    # For each combination of aliases, generate tags
+    for c1_aliases in chars1_aliases:
+        for c2_aliases in chars2_aliases:
+            for c1 in c1_aliases:
+                for c2 in c2_aliases:
+                    matchups.append(f"{c1} vs {c2}")
+            # Also add player-character tags for all aliases
+            for c1 in c1_aliases:
+                matchups.append(f"{p1} {c1}")
+        for c2_aliases in chars2_aliases:
+            for c2 in c2_aliases:
+                matchups.append(f"{p2} {c2}")
 
     matchups += [
         f"{p1} vs {p2}",
@@ -278,11 +332,17 @@ def generate_title_with_event(p1, p2, chars1, chars2, data):
 
     bracket_options = ["Winners", "Losers", "Pools"]
     round_type = ""
-    while round_type not in bracket_options:
-        round_type = input_with_autocomplete(
+    while True:
+        user_input = input_with_autocomplete(
             "Enter round type (Winners, Losers, Pools): ",
             bracket_options
-        ).lower().strip()
+        )
+        normalized = user_input.strip().lower().capitalize()
+        if normalized in bracket_options:
+            round_type = normalized
+            break
+        else:
+            print("Invalid input. Please enter one of: Winners, Losers, Pools.")
 
     if round_type in ["Winners", "Losers"]:
         # Show the available round details (e.g., Round 1 to Round 12)
@@ -301,15 +361,27 @@ def generate_title_with_event(p1, p2, chars1, chars2, data):
 
         parsed = parse_round_input(raw, round_type)
         bracket_title = f"{round_type.title()} {parsed}"
-
+    else:
+        bracket_title = round_type.title()
 
     p1_char = chars1[0] if chars1 else "Unknown"
     p2_char = chars2[0] if chars2 else "Unknown"
 
+    # Only use the main name for the title (not aliases)
+    def main_name(char):
+        # If char is an alias, find its main name
+        for main, aliases in CHARACTER_ALIASES.items():
+            if char == main or char in aliases:
+                return main
+        return char
+
+    p1_char_main = main_name(p1_char)
+    p2_char_main = main_name(p2_char)
+
     if event_name:
         record_event_if_new(data, event_name, event_number)
 
-    title = f"{event_name} #{event_number} {bracket_title} - {p1} ({p1_char}) vs {p2} ({p2_char}) - SSBU"
+    title = f"{event_name} #{event_number} {bracket_title} - {p1} ({p1_char_main}) vs {p2} ({p2_char_main}) - SSBU"
     return title, event_name, event_number
 
 

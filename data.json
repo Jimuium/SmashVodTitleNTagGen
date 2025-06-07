@@ -3,31 +3,68 @@
     "hertsu": [
       "Hertsu",
       {
-        "Sheik": 26,
-        "Fox": 6
+        "Sheik": 7
       }
     ],
     "dasuki": [
       "Dasuki",
       {
-        "Piranha Plant": 24,
-        "R.O.B": 13,
-        "Bowser": 7
+        "Piranha Plant": 1
+      }
+    ],
+    "jimuu": [
+      "Jimuu",
+      {
+        "Yoshi": 3
+      }
+    ],
+    "hernos": [
+      "Hernos",
+      {
+        "ROB": 3
+      }
+    ],
+    "turbokaivuri": [
+      "Turbokaivuri",
+      {
+        "Jigglypuff": 1
+      }
+    ],
+    "venjous": [
+      "Venjous",
+      {
+        "Byleth": 1
+      }
+    ],
+    "menta": [
+      "Menta",
+      {
+        "Kazuya": 1
+      }
+    ],
+    "elgy": [
+      "Elgy",
+      {
+        "Little Mac": 2
+      }
+    ],
+    "lhimenen": [
+      "lhimenen",
+      {
+        "Terry": 1
+      }
+    ],
+    "dani": [
+      "Dani",
+      {
+        "Cloud": 2
       }
     ]
   },
   "events": [
     {
       "name": "PVL Weekly",
-      "number": 19
-    },
-    {
-      "name": "PVL Weekly",
       "number": 18
-    },
-    {
-      "name": "rtr",
-      "number": 4
     }
   ]
 }
