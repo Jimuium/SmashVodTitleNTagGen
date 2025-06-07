@@ -6,47 +6,6 @@ import re
 
 DATA_FILE = "data.json"
 
-CHARACTER_LIST = [
-    "Mario", "Donkey Kong", "Link", "Samus", "Dark Samus", "Yoshi", "Kirby", "Fox", "Pikachu",
-    "Luigi", "Ness", "Captain Falcon", "Jigglypuff", "Peach", "Daisy", "Bowser", "Ice Climbers",
-    "Sheik", "Zelda", "Dr. Mario", "Pichu", "Falco", "Marth", "Lucina", "Young Link", "Ganondorf",
-    "Mewtwo", "Roy", "Chrom", "Mr. Game & Watch", "Meta Knight", "Pit", "Dark Pit", "Zero Suit Samus",
-    "Wario", "Snake", "Ike", "Pokémon Trainer", "Diddy Kong", "Lucas", "Sonic", "King Dedede",
-    "Olimar", "Lucario", "ROB", "Toon Link", "Wolf", "Villager", "Mega Man", "Wii Fit Trainer",
-    "Rosalina & Luma", "Little Mac", "Greninja", "Mii Brawler", "Mii Swordfighter", "Mii Gunner",
-    "Palutena", "Pac-Man", "Robin", "Shulk", "Bowser Jr.", "Duck Hunt", "Ryu", "Ken", "Cloud",
-    "Corrin", "Bayonetta", "Inkling", "Ridley", "Simon", "Richter", "King K. Rool", "Isabelle",
-    "Incineroar", "Piranha Plant", "Joker", "Hero", "Banjo & Kazooie", "Terry", "Byleth", "Min Min",
-    "Steve", "Sephiroth", "Pyra", "Mythra", "Kazuya", "Sora"
-]
-
-# Add a mapping for character aliases
-CHARACTER_ALIASES = {
-    "ROB": ["R.O.B.", "Robotic Operating Buddy"],
-    "Bowser Jr.": ["Bowser Junior"],
-    "Pokémon Trainer": ["Pokemon Trainer"],
-    "Mr. Game & Watch": ["Game & Watch", "Mr Game and Watch"],
-    "Duck Hunt": ["Duck Hunt Duo"],
-    "Banjo & Kazooie": ["Banjo and Kazooie"],
-    "Rosalina & Luma": ["Rosalina and Luma"],
-    "Ice Climbers": ["Ice Climber"],
-    "King K. Rool": ["King K Rool"],
-    "Wii Fit Trainer": ["Wii Fit"],
-    # Add more aliases as needed
-}
-
-
-def get_all_aliases(char_name):
-    """Returns a list of all aliases for a character, including the main name."""
-    aliases = [char_name]
-    for main, others in CHARACTER_ALIASES.items():
-        if char_name == main:
-            aliases.extend(others)
-        elif char_name in others:
-            aliases.append(main)
-            aliases.extend([o for o in others if o != char_name])
-    return list(dict.fromkeys(aliases))  # Remove duplicates, preserve order
-
 
 def load_data():
     """
@@ -55,15 +14,22 @@ def load_data():
     - If it’s an older flat dict of players, migrate it under “players”.
     """
     if not os.path.exists(DATA_FILE):
-        return {"players": {}, "events": []}
+        # Provide empty structure for all keys
+        return {"players": {}, "events": [], "character_list": [], "character_aliases": {}}
 
     with open(DATA_FILE, "r", encoding="utf-8") as f:
         raw = json.load(f)
 
+    # Migration for old format
     if isinstance(raw, dict) and "players" in raw and "events" in raw:
+        # Ensure character_list and character_aliases exist
+        if "character_list" not in raw:
+            raw["character_list"] = []
+        if "character_aliases" not in raw:
+            raw["character_aliases"] = {}
         return raw
 
-    return {"players": raw, "events": []}
+    return {"players": raw, "events": [], "character_list": [], "character_aliases": {}}
 
 
 def save_data(data):
@@ -99,6 +65,18 @@ def input_with_autocomplete(prompt, options):
         return input(prompt).strip()
     finally:
         readline.set_completer(None)
+
+
+def get_all_aliases(char_name, character_aliases):
+    """Returns a list of all aliases for a character, including the main name."""
+    aliases = [char_name]
+    for main, others in character_aliases.items():
+        if char_name == main:
+            aliases.extend(others)
+        elif char_name in others:
+            aliases.append(main)
+            aliases.extend([o for o in others if o != char_name])
+    return list(dict.fromkeys(aliases))  # Remove duplicates, preserve order
 
 
 def get_characters(player_input, data):
@@ -144,7 +122,8 @@ def get_characters(player_input, data):
     chosen = []
     used_chars = set()
     # If no previous character data, use CHARACTER_LIST for autocomplete
-    autocomplete_options = top_characters if top_characters else CHARACTER_LIST
+    character_list = data.get("character_list", [])
+    autocomplete_options = top_characters if top_characters else character_list
     for i in range(num):
         prompt = f"Character {i+1} for {display_name} (leave blank to auto-select): "
         char_input = input_with_autocomplete(prompt, autocomplete_options)
@@ -165,7 +144,7 @@ def get_characters(player_input, data):
     return display_name, chosen
 
 
-def construct_tags(p1, p2, chars1, chars2, event_name, event_number):
+def construct_tags(p1, p2, chars1, chars2, event_name, event_number, data):
     """
     Builds a comma-separated tag string:
     - Base tags: ssbu, Super Smash Bros. Ultimate, tournament, ssbu gameplay, etc.
@@ -187,9 +166,10 @@ def construct_tags(p1, p2, chars1, chars2, event_name, event_number):
     ]
 
     matchups = []
+    character_aliases = data.get("character_aliases", {})
     # For each character, get all aliases (including main name)
-    chars1_aliases = [get_all_aliases(c1) for c1 in chars1]
-    chars2_aliases = [get_all_aliases(c2) for c2 in chars2]
+    chars1_aliases = [get_all_aliases(c1, character_aliases) for c1 in chars1]
+    chars2_aliases = [get_all_aliases(c2, character_aliases) for c2 in chars2]
 
     # For each combination of aliases, generate tags
     for c1_aliases in chars1_aliases:
@@ -286,6 +266,7 @@ def parse_round_input(user_input, bracket_type):
     # fallback
     return user_input.title()
 
+
 def generate_title_with_event(p1, p2, chars1, chars2, data):
     """
     1) Lists all existing event names.
@@ -367,10 +348,10 @@ def generate_title_with_event(p1, p2, chars1, chars2, data):
     p1_char = chars1[0] if chars1 else "Unknown"
     p2_char = chars2[0] if chars2 else "Unknown"
 
+    character_aliases = data.get("character_aliases", {})
     # Only use the main name for the title (not aliases)
     def main_name(char):
-        # If char is an alias, find its main name
-        for main, aliases in CHARACTER_ALIASES.items():
+        for main, aliases in character_aliases.items():
             if char == main or char in aliases:
                 return main
         return char
@@ -383,6 +364,117 @@ def generate_title_with_event(p1, p2, chars1, chars2, data):
 
     title = f"{event_name} #{event_number} {bracket_title} - {p1} ({p1_char_main}) vs {p2} ({p2_char_main}) - SSBU"
     return title, event_name, event_number
+
+
+def get_event_by_name(data, name):
+    """Return the event dict for a given name (case-insensitive), or None."""
+    for e in data.get("events", []):
+        if e["name"].lower() == name.lower():
+            return e
+    return None
+
+
+def get_event_by_name_and_number(data, name, number):
+    """Return the event dict for a given name and number (case-insensitive), or None."""
+    for e in data.get("events", []):
+        if e["name"].lower() == name.lower() and e.get("number", None) == number:
+            return e
+    # fallback: match by name only (legacy)
+    for e in data.get("events", []):
+        if e["name"].lower() == name.lower():
+            return e
+    return None
+
+
+def prompt_for_event_links(event, event_title):
+    """Prompt user to add playlist and bracket links to the event if missing. Store in event dict."""
+    updated = False
+    if "playlist" not in event or not event["playlist"]:
+        pl = input(f"Enter playlist link for '{event_title}' (or leave blank): ").strip()
+        if pl:
+            event["playlist"] = pl
+            updated = True
+    if "bracket" not in event or not event["bracket"]:
+        br = input(f"Enter bracket/results link for '{event_title}' (or leave blank): ").strip()
+        if br:
+            event["bracket"] = br
+            updated = True
+    return updated
+
+
+def generate_description(p1, p2, chars1, chars2, event_name, event_number, event, data, date_str=None):
+    """
+    Generate a YouTube video description for the match.
+    """
+    character_aliases = data.get("character_aliases", {})
+    # Use only the main character names for the description
+    def main_name(char):
+        for main, aliases in character_aliases.items():
+            if char == main or char in aliases:
+                return main
+        return char
+
+    p1_char = main_name(chars1[0]) if chars1 else "Unknown"
+    p2_char = main_name(chars2[0]) if chars2 else "Unknown"
+    event_title = f"{event_name} #{event_number}"
+
+    # Determine format based on round in event_title (from main())
+    format_str = "Best-of-3"
+    import inspect
+    stack = inspect.stack()
+    round_str = None
+    for frame in stack:
+        if 'title' in frame.frame.f_locals:
+            t = frame.frame.f_locals['title']
+            parts = t.split(" - ")[0].split(" ")
+            if len(parts) > 3:
+                round_str = " ".join(parts[3:]).strip()
+            break
+
+    if round_str:
+        r = round_str.lower()
+        if (
+            r == "losers semifinals"
+            or r == "losers finals"
+            or r == "winners finals"
+            or r == "winners grand finals"
+        ):
+            format_str = "Best-of-5"
+
+    desc = []
+    desc.append(f"{event_title} – {p1} vs {p2} – Super Smash Bros. Ultimate\n")
+    desc.append(f"This is a recorded match from {event_title}, part of our ongoing weekly Super Smash Bros. Ultimate series. In this set, {p1} and {p2} face off using {p1_char} and {p2_char} respectively.\n")
+    desc.append("Match Details:")
+    desc.append("Game: Super Smash Bros. Ultimate")
+    desc.append(f"Event: {event_title}")
+    desc.append(f"Players: {p1} vs {p2}")
+    desc.append(f"Characters: {p1_char} vs {p2_char}")
+    desc.append(f"Format: {format_str}")
+    # No date line
+    desc.append("")
+    # Playlist link
+    if event and event.get("playlist"):
+        desc.append(f"Watch more matches from {event_title} in the full playlist: {event['playlist']}")
+    else:
+        desc.append(f"Watch more matches from {event_title} in the full playlist: [insert playlist link]")
+    # Bracket link
+    if event and event.get("bracket"):
+        desc.append(f"Full bracket and results: {event['bracket']}")
+    else:
+        desc.append(f"Full bracket and results: [insert link if available]")
+    desc.append("\nSubscribe for more competitive Super Smash Bros. Ultimate content, including full sets, tournament highlights, and weekly uploads.\n")
+    # Hashtags
+    event_hashtag = f"#{event_name.replace(' ', '')}{event_number}"
+    hashtags = [
+        "#SuperSmashBrosUltimate",
+        f"#{p1_char.replace(' ', '')}Vs{p2_char.replace(' ', '')}",
+        "#SmashUltimateTournament",
+        f"#{p1.replace(' ', '')}",
+        f"#{p2.replace(' ', '')}",
+        event_hashtag
+    ]
+    desc.append(" ".join(hashtags))
+    return "\n".join(desc)
 
 
 def main():
@@ -412,10 +504,24 @@ def main():
     print(title)
 
     # Now generate TAGS (including "{event_name} {event_number}" instead of "PVL"):
-    tags = construct_tags(p1_display, p2_display, p1_chars, p2_chars, evt_name, evt_num)
+    tags = construct_tags(p1_display, p2_display, p1_chars, p2_chars, evt_name, evt_num, data)
     print("\nGenerated YouTube tags:")
     print(tags)
     print(f"\nCharacter count: {len(tags)}")
+
+    # Get event object by name and number, and prompt for links if missing
+    event_obj = get_event_by_name_and_number(data, evt_name, evt_num)
+    event_title = f"{evt_name} #{evt_num}"
+    if event_obj:
+        if prompt_for_event_links(event_obj, event_title):
+            print("Event links updated.")
+
+    # Generate and print YouTube description
+    description = generate_description(
+        p1_display, p2_display, p1_chars, p2_chars, evt_name, evt_num, event_obj, data
+    )
+    print("\nGenerated YouTube description:\n")
+    print(description)
 
     save_data(data)
 

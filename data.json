@@ -1,9 +1,132 @@
 {
+  "character_list": [
+    "Mario",
+    "Donkey Kong",
+    "Link",
+    "Samus",
+    "Dark Samus",
+    "Yoshi",
+    "Kirby",
+    "Fox",
+    "Pikachu",
+    "Luigi",
+    "Ness",
+    "Captain Falcon",
+    "Jigglypuff",
+    "Peach",
+    "Daisy",
+    "Bowser",
+    "Ice Climbers",
+    "Sheik",
+    "Zelda",
+    "Dr. Mario",
+    "Pichu",
+    "Falco",
+    "Marth",
+    "Lucina",
+    "Young Link",
+    "Ganondorf",
+    "Mewtwo",
+    "Roy",
+    "Chrom",
+    "Mr. Game & Watch",
+    "Meta Knight",
+    "Pit",
+    "Dark Pit",
+    "Zero Suit Samus",
+    "Wario",
+    "Snake",
+    "Ike",
+    "Pokémon Trainer",
+    "Diddy Kong",
+    "Lucas",
+    "Sonic",
+    "King Dedede",
+    "Olimar",
+    "Lucario",
+    "ROB",
+    "Toon Link",
+    "Wolf",
+    "Villager",
+    "Mega Man",
+    "Wii Fit Trainer",
+    "Rosalina & Luma",
+    "Little Mac",
+    "Greninja",
+    "Mii Brawler",
+    "Mii Swordfighter",
+    "Mii Gunner",
+    "Palutena",
+    "Pac-Man",
+    "Robin",
+    "Shulk",
+    "Bowser Jr.",
+    "Duck Hunt",
+    "Ryu",
+    "Ken",
+    "Cloud",
+    "Corrin",
+    "Bayonetta",
+    "Inkling",
+    "Ridley",
+    "Simon",
+    "Richter",
+    "King K. Rool",
+    "Isabelle",
+    "Incineroar",
+    "Piranha Plant",
+    "Joker",
+    "Hero",
+    "Banjo & Kazooie",
+    "Terry",
+    "Byleth",
+    "Min Min",
+    "Steve",
+    "Sephiroth",
+    "Pyra",
+    "Mythra",
+    "Kazuya",
+    "Sora"
+  ],
+  "character_aliases": {
+    "ROB": [
+      "R.O.B.",
+      "Robotic Operating Buddy"
+    ],
+    "Bowser Jr.": [
+      "Bowser Junior"
+    ],
+    "Pokémon Trainer": [
+      "Pokemon Trainer"
+    ],
+    "Mr. Game & Watch": [
+      "Game & Watch",
+      "Mr Game and Watch"
+    ],
+    "Duck Hunt": [
+      "Duck Hunt Duo"
+    ],
+    "Banjo & Kazooie": [
+      "Banjo and Kazooie"
+    ],
+    "Rosalina & Luma": [
+      "Rosalina and Luma"
+    ],
+    "Ice Climbers": [
+      "Ice Climber"
+    ],
+    "King K. Rool": [
+      "King K Rool"
+    ],
+    "Wii Fit Trainer": [
+      "Wii Fit"
+    ]
+  },
   "players": {
     "hertsu": [
       "Hertsu",
       {
-        "Sheik": 7
+        "Sheik": 10
       }
     ],
     "dasuki": [
@@ -15,13 +138,13 @@
     "jimuu": [
       "Jimuu",
       {
-        "Yoshi": 3
+        "Yoshi": 6
       }
     ],
     "hernos": [
       "Hernos",
       {
-        "ROB": 3
+        "ROB": 4
       }
     ],
     "turbokaivuri": [
@@ -39,7 +162,7 @@
     "menta": [
       "Menta",
       {
-        "Kazuya": 1
+        "Kazuya": 2
       }
     ],
     "elgy": [
@@ -64,7 +187,9 @@
   "events": [
     {
       "name": "PVL Weekly",
-      "number": 18
+      "number": 18,
+      "playlist": "blaablaa",
+      "bracket": "bleeblee"
     }
   ]
 }
