@@ -21,12 +21,14 @@ def generate_title_with_event(p1, p2, chars1, chars2, data):
 
     default_num = get_latest_event_number_for(default_name, data) if default_name else 1
 
-    evt_name_input = input_with_autocomplete(f"Enter event name [{default_name}]: ", unique_names)
+    evt_name_input = input_with_autocomplete(
+        f"Enter event name [{default_name}]: ", unique_names, required=False
+    )
     event_name = evt_name_input if evt_name_input else default_name
 
     highest_for_this = get_latest_event_number_for(event_name, data)
 
-    num_input = input(f"Enter event number [{highest_for_this}]: ").strip()
+    num_input = input(f"\033[91mEnter event number [{highest_for_this}]: \033[0m").strip()
     if num_input.isdigit():
         event_number = int(num_input)
     else:
@@ -37,7 +39,8 @@ def generate_title_with_event(p1, p2, chars1, chars2, data):
     while True:
         user_input = input_with_autocomplete(
             "Enter round type (Winners, Losers, Pools): ",
-            bracket_options
+            bracket_options,
+            required=True
         )
         normalized = user_input.strip().lower().capitalize()
         if normalized in bracket_options:
@@ -58,7 +61,7 @@ def generate_title_with_event(p1, p2, chars1, chars2, data):
         print("  Finals (f)")
         print("  Grand Finals (gf)")
 
-        raw = input_with_autocomplete("Enter round detail: ", detail_opts)
+        raw = input_with_autocomplete("Enter round detail: ", detail_opts, required=False)
 
         parsed = parse_round_input(raw, round_type)
         bracket_title = f"{round_type.title()} {parsed}"

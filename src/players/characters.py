@@ -33,8 +33,12 @@ def get_characters(player_input, data):
         print("  (none yet)")
 
     while True:
+        num_input = input(f"\033[91m\nHow many characters did {display_name} play? [1] \033[0m")
+        if not num_input.strip():
+            num = 1
+            break
         try:
-            num = int(input(f"\nHow many characters did {display_name} play? "))
+            num = int(num_input)
             if num > 0:
                 break
             print("Please enter a positive integer.")
@@ -47,7 +51,7 @@ def get_characters(player_input, data):
     autocomplete_options = top_characters if top_characters else character_list
     for i in range(num):
         prompt = f"Character {i+1} for {display_name} (leave blank to auto-select): "
-        char_input = input_with_autocomplete(prompt, autocomplete_options)
+        char_input = input_with_autocomplete(prompt, autocomplete_options, required=False)
 
         if char_input:
             chosen_char = char_input
